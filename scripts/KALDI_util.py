@@ -9,6 +9,7 @@ import Queue
 import json
 import time
 import os
+import collections
 
 
 
@@ -63,7 +64,7 @@ class KaldiWSClient(WebSocketClient):
     def finish(self):
         self.finished = True
 
-    @rate_limited(10)
+    @rate_limited(100)
     def send_data(self, data):
         self.send(data, binary=True)
 
@@ -86,7 +87,7 @@ class KaldiWSClient(WebSocketClient):
                         block = self.audiofile.pop()
                         self.send_data(block)
                     except IndexError:
-                        time.sleep(0.1)
+                        time.sleep(0.05)
             else:
                 with self.audiofile as audiostream:
                     for block in iter(lambda: audiostream.read(self.byterate/5), ""):
