@@ -3,7 +3,7 @@
 from ws4py.client.threadedclient import WebSocketClient
 
 
-SERVER_URI = ''
+SERVER_URI = '10.177.254.60/'
 
 
 
