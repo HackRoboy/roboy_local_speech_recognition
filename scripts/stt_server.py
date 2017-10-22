@@ -108,6 +108,7 @@ def stt_with_vad():
         print('Recognized Text:' + text.encode('utf-8'))
             
         got_a_sentence = False
+        leave = True
             
     stream.close()
 
