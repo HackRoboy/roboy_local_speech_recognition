@@ -51,7 +51,7 @@ class KaldiWSClient(WebSocketClient):
 
     def __init__(self, audiofile, url, protocols=None, extensions=None, heartbeat_freq=None, byterate=32000,
                  save_adaptation_state_filename=None, send_adaptation_state_filename=None):
-        super(MyClient, self).__init__(url, protocols, extensions, heartbeat_freq)
+        super(KaldiWSClient, self).__init__(url, protocols, extensions, heartbeat_freq)
         self.final_hyps = []
         self.audiofile = audiofile
         self.byterate = byterate
