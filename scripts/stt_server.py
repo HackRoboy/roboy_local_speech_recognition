@@ -37,13 +37,13 @@ def stt_with_vad():
     NUM_PADDING_CHUNKS = int(PADDING_DURATION_MS / CHUNK_DURATION_MS)
     NUM_WINDOW_CHUNKS = int(240 / CHUNK_DURATION_MS)
 
-	
+    
     speech_stream = collections.deque(maxlen=NUM_PADDING_CHUNKS*10)
-	content_type = "audio/x-raw, layout=(string)interleaved, rate=(int)%d, format=(string)S16LE, channels=(int)1" %(RATE)
+    content_type = "audio/x-raw, layout=(string)interleaved, rate=(int)%d, format=(string)S16LE, channels=(int)1" %(RATE)
     ws = KaldiWSClient(speech_stream, SERVER_URI + '?%s' % (urllib.urlencode([("content-type", content_type)])), byterate=RATE*2)
-	ws.connect()
-	
-	
+    ws.connect()
+    
+    
     vad = webrtcvad.Vad(2)
 
     pa = pyaudio.PyAudio()
@@ -86,24 +86,24 @@ def stt_with_vad():
             ring_buffer_index += 1
             ring_buffer_index %= NUM_WINDOW_CHUNKS
             if not triggered:
-				# No speech recognized yet
+                # No speech recognized yet
                 ring_buffer.append(chunk)
                 num_voiced = sum(ring_buffer_flags)
                 if num_voiced > 0.5 * NUM_WINDOW_CHUNKS:
-					# Enough speech detected to trigger
+                    # Enough speech detected to trigger
                     sys.stdout.write('+')
                     triggered = True
                     voiced_frames.extend(ring_buffer)
-					speech_stream.extend(ring_buffer)
+                    speech_stream.extend(ring_buffer)
                     ring_buffer.clear()
             else:
-				# Speech recognized, waiting for end of speech
+                # Speech recognized, waiting for end of speech
                 voiced_frames.append(chunk)
-				speech_stream.append(chunk)
+                speech_stream.append(chunk)
                 ring_buffer.append(chunk)
                 num_unvoiced = NUM_WINDOW_CHUNKS - sum(ring_buffer_flags)
                 if num_unvoiced > 0.9 * NUM_WINDOW_CHUNKS:
-					# Pause long enough to assume end of sentence
+                    # Pause long enough to assume end of sentence
                     sys.stdout.write('-')
                     triggered = False
                     got_a_sentence = True
@@ -115,10 +115,10 @@ def stt_with_vad():
         
         stream.stop_stream()
         print("* done recording")
-		
-		ws.finish()
         
-		text = ws.get_full_hyp()
+        ws.finish()
+        
+        text = ws.get_full_hyp()
         print('Recognized Text:' + text.encode('utf-8'))
             
         got_a_sentence = False
@@ -128,21 +128,21 @@ def stt_with_vad():
     return text
 
 def stt_subprocess(q):
-	q.put(stt_with_vad())
+    q.put(stt_with_vad())
 
 def handle_stt(req):
-	queue = Queue()
-	p = Process(target = stt_subprocess, args = (queue,))
-	p.start()
-	p.join()
-	return queue.get()
+    queue = Queue()
+    p = Process(target = stt_subprocess, args = (queue,))
+    p.start()
+    p.join()
+    return queue.get()
 
 def stt_server():
     rospy.init_node('roboy_local_speech_recognition')
     s = rospy.Service('/roboy/cognition/speech/recognition', RecognizeSpeech, handle_stt)
-	
+    
     print "Ready to recognise speech."
     rospy.spin()
 
 if __name__ == '__main__':
-	stt_server()
+    stt_server()
