@@ -12,7 +12,7 @@ import os
 
 
 
-SERVER_URI = '10.177.254.60/'
+SERVER_URI = 'ws://10.177.254.60:8080/client/ws/speech/'
 
 
 
