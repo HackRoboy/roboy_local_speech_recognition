@@ -1,16 +1,27 @@
 #!/usr/bin/env python
 
-import queue
+from ws4py.client.threadedclient import WebSocketClient
+import time
+import threading
+import sys
+import urllib
+import Queue
+import json
+import time
+import os
 
 
-SERVER_URI = ''
+
+SERVER_URI = 'ws://10.177.254.60:8080/client/ws/speech'
 
 
 
 def recogniseSpeechData(data):
+    content_type = "audio/x-raw, layout=(string)interleaved, rate=(int)%d, format=(string)S16LE, channels=(int)1" %(16000)
     ws = KaldiWSClient(data, SERVER_URI + '?%s' % (urllib.urlencode([("content-type", content_type)])), byterate=32000)
     ws.connect()
     result = ws.get_full_hyp()
+    print("\n", flush=True)
     return result
 #
 
@@ -39,7 +50,7 @@ class KaldiWSClient(WebSocketClient):
 
     def __init__(self, audiofile, url, protocols=None, extensions=None, heartbeat_freq=None, byterate=32000,
                  save_adaptation_state_filename=None, send_adaptation_state_filename=None):
-        super(MyClient, self).__init__(url, protocols, extensions, heartbeat_freq)
+        super(KaldiWSClient, self).__init__(url, protocols, extensions, heartbeat_freq)
         self.final_hyps = []
         self.audiofile = audiofile
         self.byterate = byterate
