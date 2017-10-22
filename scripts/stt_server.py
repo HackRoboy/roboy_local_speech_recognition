@@ -22,7 +22,7 @@ sys.path.append(os.path.join(abs_path, "..", "..", "common"))
 from roboy_communication_cognition.srv import RecognizeSpeech
 
 
-SERVER_URI = ''
+SERVER_URI = 'ws://10.177.254.60:8080/client/ws/speech'
 
 
 def stt_with_vad():
