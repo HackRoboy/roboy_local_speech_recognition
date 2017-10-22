@@ -13,7 +13,7 @@ import pdb
 
 
 # Import Roboy Stuff
-from KALDI_util import *
+from KALDI_util import recogniseSpeechData
 
 abs_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(abs_path, "..", "..", "common"))
