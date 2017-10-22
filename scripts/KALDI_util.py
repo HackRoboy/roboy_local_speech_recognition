@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from ws4py.client.threadedclient import WebSocketClient
+import queue
 
 
 SERVER_URI = ''
@@ -13,7 +13,6 @@ def recogniseSpeechData(data):
     result = ws.get_full_hyp()
     return result
 #
-
 
 
 
@@ -34,7 +33,6 @@ def rate_limited(maxPerSecond):
             return ret
         return rate_limited_function
     return decorate
-#
 
 
 class KaldiWSClient(WebSocketClient):
@@ -66,6 +64,8 @@ class KaldiWSClient(WebSocketClient):
                     print >> sys.stderr, "Failed to send adaptation state: ",  e
             if(isinstance(self.audiofile, basestring)):
                 self.send_data(self.audiofile)
+			else if (isinstance(self.audiofile, collections.deque)):
+				
             else:
                 with self.audiofile as audiostream:
                     for block in iter(lambda: audiostream.read(self.byterate/5), ""):
