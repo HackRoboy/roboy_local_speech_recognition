@@ -1,6 +1,15 @@
 #!/usr/bin/env python
 
 from ws4py.client.threadedclient import WebSocketClient
+import time
+import threading
+import sys
+import urllib
+import Queue
+import json
+import time
+import os
+
 
 
 SERVER_URI = '10.177.254.60/'
@@ -8,6 +17,7 @@ SERVER_URI = '10.177.254.60/'
 
 
 def recogniseSpeechData(data):
+    content_type = "audio/x-raw, layout=(string)interleaved, rate=(int)%d, format=(string)S16LE, channels=(int)1" %(16000)
     ws = KaldiWSClient(data, SERVER_URI + '?%s' % (urllib.urlencode([("content-type", content_type)])), byterate=32000)
     ws.connect()
     result = ws.get_full_hyp()
