@@ -21,7 +21,7 @@ def recogniseSpeechData(data):
     ws = KaldiWSClient(data, SERVER_URI + '?%s' % (urllib.urlencode([("content-type", content_type)])), byterate=32000)
     ws.connect()
     result = ws.get_full_hyp()
-    print("\n", flush=True)
+    print("\n")
     return result
 #
 
@@ -80,8 +80,8 @@ class KaldiWSClient(WebSocketClient):
                     print >> sys.stderr, "Failed to send adaptation state: ",  e
             if(isinstance(self.audiofile, basestring)):
                 self.send_data(self.audiofile)
-            else if (isinstance(self.audiofile, collections.deque)):
-                while !self.finished:
+            elif (isinstance(self.audiofile, collections.deque)):
+                while (not self.finished):
                     try:
                         block = self.audiofile.pop()
                         self.send_data(block)
