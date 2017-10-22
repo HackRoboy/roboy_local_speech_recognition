@@ -12,7 +12,7 @@ import os
 
 
 
-SERVER_URI = 'ws://10.177.254.60:8080/client/ws/speech/'
+SERVER_URI = 'ws://10.177.254.60:8080/client/ws/speech'
 
 
 
@@ -21,6 +21,7 @@ def recogniseSpeechData(data):
     ws = KaldiWSClient(data, SERVER_URI + '?%s' % (urllib.urlencode([("content-type", content_type)])), byterate=32000)
     ws.connect()
     result = ws.get_full_hyp()
+    print("\n", flush=True)
     return result
 #
 
