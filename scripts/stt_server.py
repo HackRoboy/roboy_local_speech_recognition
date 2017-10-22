@@ -120,7 +120,8 @@ def stt_with_vad():
         
         text = ws.get_full_hyp()
         print('Recognized Text:' + text.encode('utf-8'))
-            
+        
+        leave = True;
         got_a_sentence = False
             
     stream.close()
