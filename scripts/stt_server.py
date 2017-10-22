@@ -14,7 +14,7 @@ import urllib
 
 
 # Import Roboy Stuff
-from KALDI_util import recogniseSpeechData
+from KALDI_util import KaldiWSClient
 
 abs_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(abs_path, "..", "..", "common"))
@@ -115,8 +115,10 @@ def stt_with_vad():
         
         stream.stop_stream()
         print("* done recording")
+		
+		ws.finish()
         
-		text = recogniseSpeechData(data)
+		text = ws.get_full_hyp()
         print('Recognized Text:' + text.encode('utf-8'))
             
         got_a_sentence = False

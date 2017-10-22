@@ -57,6 +57,11 @@ class KaldiWSClient(WebSocketClient):
         self.final_hyp_queue = Queue.Queue()
         self.save_adaptation_state_filename = save_adaptation_state_filename
         self.send_adaptation_state_filename = send_adaptation_state_filename
+		self.finished = False
+	
+	
+	def finish(self):
+		self.finished = True
 
     @rate_limited(10)
     def send_data(self, data):
@@ -76,7 +81,12 @@ class KaldiWSClient(WebSocketClient):
             if(isinstance(self.audiofile, basestring)):
                 self.send_data(self.audiofile)
 			else if (isinstance(self.audiofile, collections.deque)):
-				
+				while !self.finished:
+					try:
+						block = self.audiofile.pop()
+						self.send_data(block)
+					except IndexError:
+						time.sleep(0.1)
             else:
                 with self.audiofile as audiostream:
                     for block in iter(lambda: audiostream.read(self.byterate/5), ""):
@@ -86,8 +96,7 @@ class KaldiWSClient(WebSocketClient):
 
         t = threading.Thread(target=send_data_to_ws)
         t.start()
-
-
+	
     def received_message(self, m):
         response = json.loads(str(m))
         #print >> sys.stderr, "RESPONSE:", response
