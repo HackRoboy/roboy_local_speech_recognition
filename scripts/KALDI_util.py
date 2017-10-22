@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+from ws4py.client.threadedclient import WebSocketClient
+
 
 SERVER_URI = ''
 
