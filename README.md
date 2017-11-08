@@ -1,7 +1,7 @@
 # A ROS service that provides speech recognition using a KALDI server
 
 See also: https://github.com/HackRoboy/RoboyOSR
-(you can find a setup instruction for the KALDI docker module in [LucidaContainer/Hackroboy3-notizen-shuttle.txt](https://github.com/HackRoboy/RoboyOSR/blob/master/LucidaContainer/Hackroboy3-notizen-shuttle.txt9))
+(you can find a setup instruction for the KALDI docker module in [LucidaContainer/Hackroboy3-notizen-shuttle.txt](https://github.com/HackRoboy/RoboyOSR/blob/master/LucidaContainer/Hackroboy3-notizen-shuttle.txt))
 
 This module is based on the https://github.com/Roboy/roboy_speech_recognition but uses a local KALDI server instead of the Bing API
 
