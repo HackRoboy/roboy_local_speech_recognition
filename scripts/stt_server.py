@@ -10,10 +10,11 @@ import signal
 import pyaudio
 import traceback
 import pdb 
+import urllib
 
 
 # Import Roboy Stuff
-from KALDI_util import recogniseSpeechData
+from KALDI_util import KaldiWSClient
 
 abs_path = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(abs_path, "..", "..", "common"))
@@ -21,6 +22,7 @@ sys.path.append(os.path.join(abs_path, "..", "..", "common"))
 from roboy_communication_cognition.srv import RecognizeSpeech
 
 
+SERVER_URI = 'ws://127.0.0.1:8080/client/ws/speech'
 
 def stt_with_vad():
 
@@ -34,6 +36,13 @@ def stt_with_vad():
     NUM_PADDING_CHUNKS = int(PADDING_DURATION_MS / CHUNK_DURATION_MS)
     NUM_WINDOW_CHUNKS = int(240 / CHUNK_DURATION_MS)
 
+    
+    speech_stream = collections.deque(maxlen=NUM_PADDING_CHUNKS*10)
+    content_type = "audio/x-raw, layout=(string)interleaved, rate=(int)%d, format=(string)S16LE, channels=(int)1" %(RATE)
+    ws = KaldiWSClient(speech_stream, SERVER_URI + '?%s' % (urllib.urlencode([("content-type", content_type)])), byterate=RATE*2)
+    ws.connect()
+    
+    
     vad = webrtcvad.Vad(2)
 
     pa = pyaudio.PyAudio()
@@ -84,10 +93,12 @@ def stt_with_vad():
                     sys.stdout.write('+')
                     triggered = True
                     voiced_frames.extend(ring_buffer)
+                    speech_stream.extend(ring_buffer)
                     ring_buffer.clear()
             else:
                 # Speech recognized, waiting for end of speech
                 voiced_frames.append(chunk)
+                speech_stream.append(chunk)
                 ring_buffer.append(chunk)
                 num_unvoiced = NUM_WINDOW_CHUNKS - sum(ring_buffer_flags)
                 if num_unvoiced > 0.9 * NUM_WINDOW_CHUNKS:
@@ -99,14 +110,17 @@ def stt_with_vad():
             sys.stdout.flush()
 
         sys.stdout.write('\n')
-        data = b''.join(voiced_frames)
+        #data = b''.join(voiced_frames)
         
         stream.stop_stream()
         print("* done recording")
         
-        text = recogniseSpeechData(data)
+        ws.finish()
+        
+        text = ws.get_full_hyp()
         print('Recognized Text:' + text.encode('utf-8'))
-            
+        
+        leave = True;
         got_a_sentence = False
         leave = True
             
@@ -126,7 +140,7 @@ def handle_stt(req):
 
 def stt_server():
     rospy.init_node('roboy_local_speech_recognition')
-    s = rospy.Service('/roboy/cognition/speech/recognition', RecognizeSpeech, handle_stt)
+    s = rospy.Service('/roboy/cognition/speech/recognition/local', RecognizeSpeech, handle_stt)
     
     print "Ready to recognise speech."
     rospy.spin()
