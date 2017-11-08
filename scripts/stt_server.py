@@ -22,8 +22,7 @@ sys.path.append(os.path.join(abs_path, "..", "..", "common"))
 from roboy_communication_cognition.srv import RecognizeSpeech
 
 
-SERVER_URI = 'ws://10.177.254.60:8080/client/ws/speech'
-
+SERVER_URI = 'ws://127.0.0.1:8080/client/ws/speech'
 
 def stt_with_vad():
 
@@ -140,7 +139,7 @@ def handle_stt(req):
 
 def stt_server():
     rospy.init_node('roboy_local_speech_recognition')
-    s = rospy.Service('/roboy/cognition/speech/recognition', RecognizeSpeech, handle_stt)
+    s = rospy.Service('/roboy/cognition/speech/recognition/local', RecognizeSpeech, handle_stt)
     
     print "Ready to recognise speech."
     rospy.spin()
